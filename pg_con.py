@@ -4,22 +4,23 @@ import jwt
 import secrets
 from asyncpg import Pool, create_pool, PostgresError
 from datetime import datetime, timedelta
-from fastapi import HTTPException, JSONResponse
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 
 KEY = "bf"
 SIGN = "HS256"
 
-con_pools: dict(str, Pool) = {}
+con_pools = {}
 
 
 async def allocate_pool(uname, pword):
-    if not (uname or pword):
-        raise HTTPException('Please provide a credentials')
+    if not (uname and pword):
+        raise HTTPException(404, 'Please provide a credentials')
     try:
         pool_str = f'postgres://{uname}:{pword}@localhost:1618/cleaners'
         con_pools[uname] = await create_pool(pool_str, min_size=1, max_size=6)
     except Exception as e:
-        raise HTTPException(f"Error creating pool. Info: {e}")
+        raise HTTPException(404, f"Error creating pool. Info: {e}")
     return con_pools.get(uname)
 
 
@@ -27,18 +28,21 @@ async def get_con(uname: str = None, pool: Pool = None):
     if not pool:
         pool = con_pools.get(uname)
         if not pool:
-            raise HTTPException('Please allocate a new pool for user')
+            raise HTTPException(404, 'Please allocate a new pool for user')
     try:
         con = await pool.acquire()
         yield con
     except Exception as e:
-        raise HTTPException(f'Error getting connection. Info: {e}')
-    finally:
-        await pool.release(con)
+        raise HTTPException(404, f'Error getting connection. Info: {e}')
 
 
 async def test_pool(uname: str = None, pool: Pool = None):
-    return await get_con(uname, pool) is not None
+    try:
+        async for con in get_con(uname, pool):
+            await pool.release(con)
+            return True  # Если соединение успешно получено
+    except HTTPException:
+        return False  # Возвращаем False, если соединение не удалось
 
 
 async def free_pool(uname):
@@ -69,11 +73,13 @@ async def auth_user(uname, pword, is_guest=False):
     try:
         await allocate_pool(uname, pword)
         if uname in ('customer', 'postgres'):
-            is_valid = await test_pool(uname, pword)
-            if is_valid:
+            if con_pools.get(uname):
+                await free_pool(uname)
                 role = uname
+            else:
+                is_valid = False
         else:
-            async for con in await get_con(uname):
+            async for con in get_con(uname):
                 is_valid = await con.fetchval("select shared.user_validate($1, $2)", uname, pword)
                 if is_valid:
                     role = await con.fetchval("select shared.user_authorize($1, $2)", uname, pword)

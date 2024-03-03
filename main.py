@@ -12,7 +12,7 @@ from pydantic import ValidationError
 import uvicorn
 
 # Локальные модули
-from pg_con import gen_con, auth_user
+from pg_con import get_con, auth_user
 from pg_fun import get_selectable_tables, get_table_columns, get_table_records
 import views
 import domain
@@ -30,7 +30,7 @@ async def auth(form_data: OAuth2PasswordRequestForm = Depends(), is_guest=False)
     # except Exception as e:
     #     raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail=f"Incorrect username or password: {e}")
 
-    jwt_token = await auth_user(form_data.username, form_data.password, is_guest)
+    response = await auth_user(form_data.username, form_data.password, False)
 
     return response
 

@@ -3,7 +3,7 @@
 import string
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException
-from pg_con import gen_con
+from pg_con import get_con
 
 async def get_selectable_tables(role):
     async for con in gen_con(role):
@@ -16,7 +16,7 @@ async def strip_validate_tab(table_name):
 
     if table_name not in available_tables:
         raise ValueError(f"Invalid table name: {table_name}. Check your input.")
-    
+
     return table_name
 
 async def get_table_columns(table_name):
