@@ -1,0 +1,56 @@
+<div x-data="{
+  records: [
+    ['John', 'Doe', 'johndoe@example.com'],
+    ['Jane', 'Doe', 'janedoe@example.com'],
+  ],
+  columns: ['First Name', 'Last Name', 'Email'],
+}">
+  <table>
+    <thead>
+      <tr>
+        <template x-for="(col_name, col_type) in columns" :key="col_name">
+          <th x-text="col_name ~ ' ' ~ col_type"></th>
+        </template>
+      </tr>
+    </thead>
+    <tbody>
+      <template x-for="(rec, index) in records" :key="index">
+        <tr>
+          <template x-for="(value, i) in rec" :key="i">
+            <td>
+              <input type="text" x-model="rec[i]" :id="`autocomplete-input-${index}-${i}`" list="autocomplete-list" class="autocomplete">
+              <label :for="`autocomplete-input-${index}-${i}`" x-text="`${columns[i]}`"></label>
+            </td>
+          </template>
+        </tr>
+      </template>
+    </tbody>
+  </table>
+
+  <datalist id="autocomplete-list">
+    <!-- Атрибут `value` в элементе `option` должен соответствовать значению свойства `value` в инпуте -->
+    <option value="option1">Option 1</option>
+    <option value="option2">Option 2</option>
+    <option value="option3">Option 3</option>
+  </datalist>
+
+  <script>
+    document.addEventListener('alpine:initialized', () => {
+      const inputs = document.querySelectorAll('input.autocomplete');
+
+      inputs.forEach((input, index) => {
+        input.autocomplete = {
+          source: (request, response) => {
+            const options = Array.from(document.querySelectorAll('#autocomplete-list option'));
+            const results = options.filter(option => option.value.toLowerCase().includes(request.term.toLowerCase()));
+            response(results.map(option => option.value));
+          },
+          minLength: 0,
+        };
+      });
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+</div>
