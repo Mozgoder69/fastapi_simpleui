@@ -73,17 +73,16 @@ async def auth_user(uname, pword, is_guest=False):
             if is_valid:
                 role = uname
         else:
-            pool = await init_pool(uname, pword)
-            async for con in gen_con(pool):
+            async for con in await get_con(uname):
                 is_valid = await con.fetchval("select shared.user_validate($1, $2)", uname, pword)
                 if is_valid:
                     role = await con.fetchval("select shared.user_authorize($1, $2)", uname, pword)
-
     except PostgresError as e:
-        raise HTTPException(status_code=401, detail=f"Postgres error: {e}")
+        raise HTTPException(401, f"Postgres error: {e}")
     except HTTPException as e:
-        raise HTTPException(status_code=404, detail=f"Token Auth Error: {e}")
-    await create_pool(uname, pword)
+        raise HTTPException(404, f"Token Auth Error: {e}")
+    if not role:
+        raise HTTPException(407, 'Undefined role. Please try again later')
     return await set_cookies(role, uname)
 
 
