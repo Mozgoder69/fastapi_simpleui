@@ -1,0 +1,10 @@
+asyncpg
+uvicorn
+fastapi
+python-jose
+rich
+jsonschema
+jinja2
+python-multipart
+pytest
+deepdiff

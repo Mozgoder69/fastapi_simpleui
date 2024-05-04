@@ -1,0 +1,19 @@
+<!-- form_field.html -->
+{% macro form_field(fld_id, fld_name, fld_val='', fld_type='text',
+options=['Долгожданный Сухарик', 'Принцип. Гаврила',
+'Безнаказанно, Безжалостно, Бессмыссленно. Но Безопасно']) %}
+<!-- suggestions: -->
+<div x-data="{ value: '{{ fld_val }}', error: '' }" x-init="$nextTick(() => { new TomSelect('#{{ fld_id }}',
+  {options: options.map(option => ({value: option, text: option})),
+  create: true, onItemAdd: value => { this.value = value; }}); })">
+  <label>
+    {{ fld_name }}
+    <select id="{{ fld_id }}" name="{{ fld_id }}" :class="{'input-error': error ? true : false}">
+      <template x-for="option in options" :key="option">
+        <option x-bind:value="option" x-text="option"></option>
+      </template>
+    </select>
+  </label>
+  <span x-show="error" x-text="error" class="error-text"></span>
+</div>
+{% endmacro %}
