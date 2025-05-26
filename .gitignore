@@ -1,8 +1,9 @@
+# Python
 __pycache__/
-.vscode/
 *.pyc
 *.py[cod]
 *.egg-info/
+*.so
 
 # Виртуальные окружения
 venv/
@@ -11,6 +12,8 @@ venv/
 .condarc
 .condamanager/
 conda-meta/
+
+# Сборка и дистрибуция
 dist/
 build/
 
@@ -18,5 +21,42 @@ build/
 .DS_Store
 Thumbs.db
 
-# other
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Зависимости
+req-back.ini
+req-front.ini
+node_modules/
+
+# Логи
+*.log
+
+# Фронтенд
+frontend/node_modules/
+frontend/.cache/
+frontend/dist/
+
+# Бэкенд
+backend/__pycache__/
+backend/.pytest_cache/
+
+# Статические файлы (если они генерируются)
+static/*
+!static/.gitkeep
+
+# Временные файлы
+*.tmp
+*.bak
+
+# Другое
 kate/
+
+# Секреты и конфигурация
+*.env
+config.json
+
+# Добавьте сюда другие специфичные для вашего проекта файлы и директории
