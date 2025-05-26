@@ -1,0 +1,5 @@
+[build]
+entry = "/src/main.js"
+outdir = "../static"
+[[build.plugins]]
+path = "@vitejs/plugin-vue"
