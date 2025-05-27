@@ -1,3 +1,5 @@
+# fastapi_simpleui/.gitignore
+
 # ─── Logs ──────────────────────────────────────────────────────────────────────
 logs/
 *.log
@@ -59,6 +61,7 @@ Thumbs.db
 conda-meta/
 .conda*/
 venv/
+**/*.secret
 **/.env
 *.env
 .env
