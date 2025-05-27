@@ -24,13 +24,6 @@ __pycache__/
 *.egg-info/
 *.so
 
-# виртуалки и окружения
-venv/
-.env
-.envs/
-.conda*/
-conda-meta/
-
 # ─── Backend специфично ───────────────────────────────────────────────────────
 backend/__pycache__/
 backend/.pytest_cache/
@@ -62,8 +55,14 @@ Thumbs.db
 *.tmp
 *.bak
 
-# ─── Секреты и конфиги ────────────────────────────────────────────────────────
+# ─── Секреты, конфиги, виртуалки и окружения ──────────────────────────────────
+conda-meta/
+.conda*/
+venv/
+**/.env
 *.env
+.env
+.envs/
 config.json
 req-back.ini
 req-front.ini
